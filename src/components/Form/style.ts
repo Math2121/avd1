@@ -45,6 +45,11 @@ export const FormGroup = styled.div`
   select {
     height: 2.5rem;
   }
+  h2{
+    font-size: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  }
 `;
 
 export const Button = styled.button`

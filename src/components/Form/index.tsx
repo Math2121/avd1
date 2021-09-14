@@ -21,14 +21,15 @@ function Form() {
   const [professores, setProfessores] = useState("");
   const [cargaHora, setCargaHora] = useState("");
   const [cadastros, setCadastros] = useState<ICadastro[]>([]);
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const cadastroSchema = yup.object().shape({
-      periodo: yup.string().required(),
-      disciplina: yup.string().required(),
-      professores: yup.string().required(),
-      cargaHora: yup.string().required(),
+      periodo: yup.string().required("Período obrigatório"),
+      disciplina: yup.string().required("Diciplina obrigatório"),
+      professores: yup.string().required("Necessário incluir professor"),
+      cargaHora: yup.string().required("Campo carga horária obrigatório"),
     });
+
     const data = {
       id: new Date(),
       periodo,
@@ -36,20 +37,26 @@ function Form() {
       professores,
       cargaHora,
     };
-    const validation = await cadastroSchema.isValid(data);
-    if (!validation) {
-      setPeriodo("");
-      setDisciplina("");
-      setCargaHora("");
-      setProfessores("");
-      alert("Dados dos formulários inválidos");
-    }
-
-    setCadastros([...cadastros,data]);
-    setPeriodo("");
-    setDisciplina("");
-    setCargaHora("");
-    setProfessores("");
+    cadastroSchema
+      .validate(data)
+      .then(() => {
+        setCadastros([...cadastros, data]);
+        setPeriodo("");
+        setDisciplina("");
+        setCargaHora("");
+        setProfessores("");
+      })
+      .catch((err) => {
+        alert(err.errors);
+      });
+    // const validation = await cadastroSchema.isValid(data);
+    // if (!validation) {
+    //   setPeriodo("");
+    //   setDisciplina("");
+    //   setCargaHora("");
+    //   setProfessores("");
+    //   alert("Dados dos formulários inválidos");
+    // }
   }
 
   useEffect(() => {
@@ -60,7 +67,7 @@ function Form() {
   useEffect(() => {
     localStorage.setItem("cadastros", JSON.stringify(cadastros));
   }, [cadastros]);
-  function handleDelete(id:Date) {
+  function handleDelete(id: Date) {
     setCadastros(cadastros.filter((item) => item.id !== id));
   }
   return (
@@ -68,6 +75,7 @@ function Form() {
       <Container>
         <FormContainer onSubmit={handleSubmit}>
           <FormGroup>
+            <h2>Cadastro de Horas</h2>
             <label htmlFor="periodo">Períodos</label>
             <select
               name="periodo"
