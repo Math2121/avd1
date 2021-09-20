@@ -9,54 +9,42 @@ import {
 } from "./style";
 import * as yup from "yup";
 interface ICadastro {
-  id: Date;
-  periodo: string;
-  disciplina: string;
-  cargaHora: string;
-  professores: string;
+  id: string;
+  codigo: string;
+  estado: string;
+  municipio: string;
 }
 function Form() {
-  const [periodo, setPeriodo] = useState("");
-  const [disciplina, setDisciplina] = useState("");
-  const [professores, setProfessores] = useState("");
-  const [cargaHora, setCargaHora] = useState("");
+  const [codigo, setCodigo] = useState("");
+  const [municipio, setMunicipio] = useState("");
+  const [estado, setEstado] = useState("");
   const [cadastros, setCadastros] = useState<ICadastro[]>([]);
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const cadastroSchema = yup.object().shape({
-      periodo: yup.string().required("Período obrigatório"),
-      disciplina: yup.string().required("Diciplina obrigatório"),
-      professores: yup.string().required("Necessário incluir professor"),
-      cargaHora: yup.string().required("Campo carga horária obrigatório"),
+      codigo: yup.string().required("Código obrigatório"),
+      municipio: yup.string().required("Município obrigatório"),
+      estado: yup.string().required("Estado obrigatório"),
     });
 
     const data = {
-      id: new Date(),
-      periodo,
-      disciplina,
-      professores,
-      cargaHora,
+      id: new Date().getTime().toString(),
+      codigo,
+      municipio,
+      estado,
     };
+
     cadastroSchema
       .validate(data)
       .then(() => {
         setCadastros([...cadastros, data]);
-        setPeriodo("");
-        setDisciplina("");
-        setCargaHora("");
-        setProfessores("");
+        setCodigo("");
+        setEstado("");
+        setMunicipio("");
       })
       .catch((err) => {
         alert(err.errors);
       });
-    // const validation = await cadastroSchema.isValid(data);
-    // if (!validation) {
-    //   setPeriodo("");
-    //   setDisciplina("");
-    //   setCargaHora("");
-    //   setProfessores("");
-    //   alert("Dados dos formulários inválidos");
-    // }
   }
 
   useEffect(() => {
@@ -67,68 +55,48 @@ function Form() {
   useEffect(() => {
     localStorage.setItem("cadastros", JSON.stringify(cadastros));
   }, [cadastros]);
-  function handleDelete(id: Date) {
+  function handleDelete(id: string) {
     setCadastros(cadastros.filter((item) => item.id !== id));
   }
   return (
     <>
       <Container>
+        <div className="ibge-back">
+          <div className="blu">
+            <h2>Cadastro do IBGE</h2>
+          </div>
+        </div>
         <FormContainer onSubmit={handleSubmit}>
           <FormGroup>
-            <h2>Cadastro de Horas</h2>
-            <label htmlFor="periodo">Períodos</label>
-            <select
-              name="periodo"
-              id="periodo"
-              value={periodo}
-              onChange={(e) => {
-                setPeriodo(e.target.value);
-              }}
-            >
-              <option value="1º periodo">1º periodo</option>
-              <option value="2º periodo">2º periodo</option>
-              <option value="3º periodo">3º periodo</option>
-              <option value="4º periodo">4º periodo</option>
-              <option value="5º periodo">5º periodo</option>
-              <option value="6º periodo">6º periodo</option>
-              <option value="7º periodo">7º periodo</option>
-            </select>
-          </FormGroup>
-          <FormGroup>
-            <label htmlFor="disciplina">Disciplina</label>
+            <label htmlFor="codigo">Código</label>
             <input
-              type="text"
-              name="disciplina"
-              value={disciplina}
+              name="codigo"
+              id="codigo"
+              value={codigo}
               onChange={(e) => {
-                setDisciplina(e.target.value);
+                setCodigo(e.target.value);
               }}
             />
           </FormGroup>
           <FormGroup>
-            <label htmlFor="professor">Professores</label>
-            <select
-              name="professor"
-              id="professor"
-              value={professores}
-              onChange={(e) => {
-                setProfessores(e.target.value);
-              }}
-            >
-              <option value="Débora">Débora</option>
-              <option value="Thiaguinho">Thiaguinho</option>
-              <option value="Samantha">Samantha</option>
-              <option value="Rita de Cássia">Rita de Cássia</option>
-            </select>
-          </FormGroup>
-          <FormGroup>
-            <label htmlFor="cargaHora">Carga horária</label>
+            <label htmlFor="municipio">Município</label>
             <input
               type="text"
-              name="cargaHora"
-              value={cargaHora}
+              name="municipio"
+              value={municipio}
               onChange={(e) => {
-                setCargaHora(e.target.value);
+                setMunicipio(e.target.value);
+              }}
+            />
+          </FormGroup>
+          <FormGroup>
+            <label htmlFor="estado">Estados</label>
+            <input
+              name="estado"
+              id="estado"
+              value={estado}
+              onChange={(e) => {
+                setEstado(e.target.value);
               }}
             />
           </FormGroup>
@@ -138,20 +106,18 @@ function Form() {
           <table>
             <thead>
               <tr>
-                <th>Periodo</th>
-                <th>Disciplinas</th>
-                <th>Professor</th>
-                <th>Carga Hora</th>
+                <th>Código</th>
+                <th>Município</th>
+                <th>Estado</th>
                 <th colSpan={1}>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {cadastros.map((item, ind) => (
+              {cadastros?.map((item, ind) => (
                 <tr key={ind}>
-                  <td>{item.periodo}</td>
-                  <td>{item.disciplina}</td>
-                  <td>{item.professores}</td>
-                  <td>{item.cargaHora}</td>
+                  <td>{item.codigo}</td>
+                  <td>{item.municipio}</td>
+                  <td>{item.estado}</td>
                   <td colSpan={1}>
                     <ButtonDel
                       onClick={() => {
